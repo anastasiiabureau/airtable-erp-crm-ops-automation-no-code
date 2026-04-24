@@ -28,17 +28,81 @@ The automation system operates across **7 core Airtable tables**, each serving a
 | `Partners` | Partner directory — companies, contacts |
 | `Transactions` | Financial records — payments linked to clients and subscription plans |
 
-> 📊 **Entity Relationship Diagram**
-> *(diagram coming soon — see `/assets/diagrams/`)*
+```mermaid
+erDiagram
+    STUFF_TEACHERS {
+        int Person_id PK
+        string User_name
+        string First_name
+        string Last_name
+        string Contract_Type
+        date Hire_date
+    }
 
-![Database Schema](./assets/diagrams/erd-schema.png)
+    CLASSES {
+        int id_class PK
+        string Class_Name
+        int Duration_Minutes
+        string Description
+    }
+
+    SESSION {
+        int Session_ID PK
+        datetime Date_Time
+        string Room
+        string Session_Status
+        int Max_Capacity
+    }
+
+    INBOUND_LEADS {
+        int Lead_ID PK
+        string First_Name
+        string Last_Name
+        string Contact_Type
+        string Lead_Source
+        string Qualify_Status
+    }
+
+    CLIENTS {
+        int Client_id PK
+        string Client_User_name
+        string First_name
+        string Last_name
+        string Client_Lifecycle
+        string Client_Segments
+    }
+
+    PARTNERS {
+        int Parthner_id PK
+        string Company_name
+        string Contact_info
+    }
+
+    TRANSACTIONS {
+        int ID_Transaction PK
+        decimal Amount_Paid
+        date Date_transaction
+        int Remaining_Classes
+    }
+
+    STUFF_TEACHERS ||--o{ CLASSES : "specializes_in"
+    STUFF_TEACHERS ||--o{ SESSION : "teaches"
+    STUFF_TEACHERS ||--o{ SESSION : "substitutes"
+    CLASSES ||--o{ SESSION : "has_instances"
+    SESSION ||--o{ CLIENTS : "attended_by"
+    CLIENTS ||--o{ TRANSACTIONS : "makes"
+    INBOUND_LEADS }o--|| STUFF_TEACHERS : "referred_by_staff"
+    INBOUND_LEADS }o--|| CLIENTS : "referred_by_client"
+    INBOUND_LEADS }o--|| PARTNERS : "referred_by_partner"
+    PARTNERS ||--o{ INBOUND_LEADS : "brings_leads"
+```
 
 ---
 
 ## 🏗️ Repository Structure
 
 ```
-airtable-erp-crm-ops-automation-no-code/
+airtable-erp-crm-ops-automation/
 │
 ├── README.md                          ← You are here
 │
