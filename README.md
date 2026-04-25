@@ -195,7 +195,7 @@ airtable-erp-crm-ops-automation/
 
 | Section | Description |
 |---|---|
-| [HR & Staff Management](./hr-staff-management/README.md) | Contract Renewal Pipeline + Teacher → Class Assignment |
+| [HR & Staff Management](./hr-staff-management-README.md) | Contract Renewal Pipeline + Teacher → Class Assignment |
 | [CRM & Lead Management](./crm-lead-management/README.md) | Lead Migration Pipeline + Activity Log Automation |
 | [Operations & Scheduling](./operations-scheduling/README.md) | Recurring Sessions + Event → Calendar Sync |
 | [Finance & Transactions](./finance-transactions/README.md) | New Client Transaction Sync |
