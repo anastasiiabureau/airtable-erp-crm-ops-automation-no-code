@@ -174,4 +174,4 @@ Full cross-reference of which automation is triggered from which interface page:
 
 ---
 
-*[← Back to main README](../README.md)*
+*[← Back to main README](./README.md)*
