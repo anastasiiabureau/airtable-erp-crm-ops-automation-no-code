@@ -323,4 +323,4 @@ Alternative entry point for updating teacher specializations and contact details
 
 ---
 
-*[← Back to main README](../README.md)*
+*[← Back to main README](./README.md)*
