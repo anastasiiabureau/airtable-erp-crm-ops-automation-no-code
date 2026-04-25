@@ -220,4 +220,4 @@ Kanban pipeline for event statuses. Moving a campaign to `In Progress` triggers 
 
 ---
 
-*[← Back to main README](../README.md)*
+*[← Back to main README](./README.md)*
