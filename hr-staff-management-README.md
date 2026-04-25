@@ -16,6 +16,7 @@ From a business perspective, this module solves two recurring operational proble
 
 ---
 
+<a id="demo"></a>
 ## 🎬 Demo
 
 > 📹 *Walkthrough video — coming soon.*
@@ -23,6 +24,7 @@ From a business perspective, this module solves two recurring operational proble
 
 ---
 
+<a id="interface"></a>
 ## 🖥️ Interface
 
 All 6 HR automations are managed through two interfaces. Here is what each entry point controls and what happens behind the scenes.
@@ -51,6 +53,7 @@ Used by HR and admins for scheduling operations. Provides an alternative entry p
 
 ---
 
+<a id="automation-overview"></a>
 ## ⚡ Automation Overview
 
 6 automations covering two independent pipelines:
@@ -70,6 +73,7 @@ Used by HR and admins for scheduling operations. Provides an alternative entry p
 
 ---
 
+<a id="user-workflows"></a>
 ## 👤 User Workflows
 
 ### Contract Renewal Pipeline
@@ -119,6 +123,7 @@ Used by HR and admins for scheduling operations. Provides an alternative entry p
 
 ---
 
+<a id="technical-deep-dive"></a>
 ## 🔬 Technical Deep Dive
 
 ### Context: CDD vs CDI
@@ -364,7 +369,6 @@ IF(
   "no data"
 )
 ```
-
 
 
 *[← Back to main README](./README.md)*
