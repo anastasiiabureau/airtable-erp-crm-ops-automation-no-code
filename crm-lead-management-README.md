@@ -16,6 +16,7 @@ From a business perspective, this module solves two recurring operational proble
 
 ---
 
+<a id="demo"></a>
 ## 🎬 Demo
 
 > 📹 *Walkthrough video — coming soon.*
@@ -23,6 +24,7 @@ From a business perspective, this module solves two recurring operational proble
 
 ---
 
+<a id="interface"></a>
 ## 🖥️ Interface
 
 All 5 CRM automations are managed through a single interface.
@@ -41,6 +43,7 @@ The primary sales workspace. Sales managers use this interface to qualify leads,
 
 ---
 
+<a id="automation-overview"></a>
 ## ⚡ Automation Overview
 
 5 automations covering two independent pipelines:
@@ -59,6 +62,7 @@ The primary sales workspace. Sales managers use this interface to qualify leads,
 
 ---
 
+<a id="user-workflows"></a>
 ## 👤 User Workflows
 
 ### Lead Migration Pipeline
@@ -109,6 +113,7 @@ The primary sales workspace. Sales managers use this interface to qualify leads,
 
 ---
 
+<a id="technical-deep-dive"></a>
 ## 🔬 Technical Deep Dive
 
 ### Tables Involved
