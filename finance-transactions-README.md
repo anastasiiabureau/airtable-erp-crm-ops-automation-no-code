@@ -159,4 +159,4 @@ Used to register client attendance for regular sessions after registration is co
 
 ---
 
-*[← Back to main README](../README.md)*
+*[← Back to main README](./README.md)*
