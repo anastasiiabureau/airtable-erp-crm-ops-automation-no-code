@@ -262,4 +262,4 @@ Kanban board across all qualification statuses. Lead cards surface contact detai
 
 ---
 
-*[← Back to main README](../README.md)*
+*[← Back to main README](./README.md)*
