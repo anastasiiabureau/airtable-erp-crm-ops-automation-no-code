@@ -2,6 +2,8 @@
 
 > A production-ready collection of **14 native Airtable automations** across HR (Human Resources), CRM, Operations, and Finance — paired with **6 role-specific interfaces** designed to centralize studio management and eliminate manual workflows.
 
+**Contents:** [🗄️ Database Schema](#database-schema) · [🖥️ Interface Map](#interface-map) · [⚡ Automation Overview](#automation-overview) · [🗺️ ER Diagram](#er-diagram) · [🔗 Tech Stack](#tech-stack) · [📂 Documentation](#documentation)
+
 ---
 
 ## 📌 What This Project Is
@@ -16,6 +18,7 @@ Documentation is organized into domain-specific sections: HR & Staff Management,
 
 ---
 
+<a id="database-schema"></a>
 ## 🗄️ Database Schema
 
 The automation system operates across **7 core Airtable tables**, each serving a distinct role in the operational pipeline:
@@ -32,6 +35,7 @@ The automation system operates across **7 core Airtable tables**, each serving a
 
 ---
 
+<a id="interface-map"></a>
 ## 🖥️ Interface Map
 
 **6 role-specific Airtable interfaces** serve as the operational layer through which every team member interacts with the system. Rather than working directly in raw Airtable tables, users manage all studio processes through purpose-built interfaces — including HR hiring and contract renewals, session scheduling and teacher coordination, front-desk client registration and plan sales, lead qualification and retention tracking, campaign and event management, and website content publishing.
@@ -51,6 +55,7 @@ Each interface is scoped to a specific role and surfaces only the data and actio
 
 ---
 
+<a id="automation-overview"></a>
 ## ⚡ Automation Overview
 
 **14 native Airtable automations** across 4 operational domains:
@@ -116,6 +121,7 @@ Each interface is scoped to a specific role and surfaces only the data and actio
 
 ---
 
+<a id="er-diagram"></a>
 ## 🗺️ Entity Relationship Diagram
 
 ```mermaid
@@ -189,6 +195,7 @@ erDiagram
 
 ---
 
+<a id="tech-stack"></a>
 ## 🔗 Tech Stack
 
 | Layer | Tool | Role |
@@ -201,6 +208,7 @@ erDiagram
 
 ---
 
+<a id="documentation"></a>
 ## 📂 Detailed Documentation
 
 | Section | Description |
@@ -214,3 +222,4 @@ erDiagram
 ---
 
 *Documentation in progress. Screenshots and flow diagrams will be added per section.*
+
