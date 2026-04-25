@@ -2,9 +2,111 @@
 
 > **1 native Airtable automation** triggered by a form submission — instantly creating a linked transaction record when a new client is registered and a subscription plan is sold.
 
+**Contents:** [🖥️ Interface](#interface) · [⚡ Automation Overview](#automation-overview) · [👤 User Workflows](#user-workflows) · [🎬 Demo](#demo) · [🔬 Technical Deep Dive](#technical-deep-dive)
+
 ---
 
-## Tables Involved
+## What This Module Does
+
+From a business perspective, this module solves one critical front-desk problem:
+
+**A sale is never registered without a transaction.** When an admin registers a new client and sells them a subscription plan at the front desk, a transaction record is created automatically the moment the form is submitted — linked to both the client and the plan. The admin fills in one form; the system handles both the client record and the financial entry simultaneously.
+
+Without this automation, the registration and the sale would need to be entered separately — creating a gap where a client could be onboarded but their payment never recorded.
+
+---
+
+<a id="demo"></a>
+## 🎬 Demo
+
+> 📹 *Walkthrough video — coming soon.*
+> Screenshots and step-by-step demo for the New Client Registration & Sale form and transaction sync flow will be added here.
+
+---
+
+<a id="interface"></a>
+## 🖥️ Interface
+
+The automation is triggered and the post-registration workflow is managed entirely through one interface.
+
+### Check-in & Sales Hub
+
+The front-desk workspace. Admins use this interface for all client-facing operations — registrations, plan sales, event sign-ups, and attendance check-ins.
+
+| Page | What the user does here | Automations triggered |
+|---|---|---|
+| **🆕 New Client Registration & Sale** | Registers a first-time client and processes their initial plan purchase or event ticket. Fills in client details, selects subscription plan, submits the form. | SYNC TRANSACTIONS TO NEW CLIENT (1) |
+| **📋 Existing Client Sale** | Processes plan renewals and upgrades for clients already in the system. Client record already exists — no new record is created. | — |
+| **📅 Existing Client Event Registration** | Links an already-registered client to a specific event attendance list. Used after new client registration if the client attended an event. | — |
+| **✅ Class / Event Check-in** | Logs attendance for regular sessions and events. Used after registration to record who actually attended. | — |
+| **🏠 Overview** | Daily front-desk summary — expected check-ins, recent sales, and new registrations. | — |
+
+---
+
+<a id="automation-overview"></a>
+## ⚡ Automation Overview
+
+1 automation covering one transactional pipeline:
+
+**New Client Transaction Sync (automation 1)** — a form-triggered creation. When the **New Client Registration & Sale** form is submitted, a client record appears in `Clients` and the automation immediately creates a matching record in `Transactions` — linking the client to their purchased subscription plan. Both records are created in a single admin action.
+
+| # | Automation | Trigger | Source Table | Destination Table | Interface |
+|---|---|---|---|---|---|
+| 1 | SYNC TRANSACTIONS TO NEW CLIENT | Form `New Client Registration & Sale` submitted | `Clients` | `Transactions` | Check-in & Sales Hub → New Client Registration & Sale |
+
+---
+
+<a id="user-workflows"></a>
+## 👤 User Workflows
+
+### New Client Registration & Sale
+
+```
+1. New client arrives at the front desk (walk-in or event attendee)
+
+2. Admin opens Check-in & Sales Hub → New Client Registration & Sale
+
+3. Admin fills in the form:
+   → First name, Last name, Email, Phone
+   → Acquisition Source (how they heard about the studio)
+   → Subscription Plan (which plan they are purchasing)
+   → If event attendee: selects Event Special Ticket
+
+4. Admin submits the form
+   → Client record created in Clients table
+   → [1] SYNC TRANSACTIONS fires instantly
+   → Transaction record created in Transactions:
+      ├── Client → linked to the new Client record
+      └── Subscription Plan → linked to the selected plan
+   → Client is now active and their purchase is recorded
+
+5a. If client attended an event:
+    → Admin goes to Existing Client Event Registration
+    → Finds the event card
+    → Links the new client to the event attendance list
+
+5b. If client is attending a regular class:
+    → Admin goes to Class / Event Check-in
+    → Registers client attendance for the session
+```
+
+### Returning Client Sale
+
+```
+Returning client purchases a new or renewed plan:
+   → Admin opens Check-in & Sales Hub → Existing Client Sale
+   → Selects existing client record
+   → Processes the new plan purchase manually
+   → This does NOT trigger the automation
+     (client record already exists — no form submission)
+```
+
+---
+
+<a id="technical-deep-dive"></a>
+## 🔬 Technical Deep Dive
+
+### Tables Involved
 
 ```mermaid
 erDiagram
@@ -41,19 +143,7 @@ erDiagram
 
 ---
 
-## Contents
-
-- [New Client Transaction Sync](#new-client-transaction-sync)
-- [Key Fields](#key-fields)
-- [Interface](#interface)
-
----
-
-## New Client Transaction Sync
-
-### Overview
-
-When the studio administrator submits the **New Client Registration & Sale** form, two things happen simultaneously: a new client record is created in `Clients`, and the automation immediately creates a corresponding transaction in `Transactions` — linking the client to their purchased subscription plan.
+### New Client Transaction Sync — Flow
 
 ```
 Administrator submits form:
@@ -82,58 +172,34 @@ New record created in Transactions:
 | `Client` | Linked to `Client_User_name` from submitted form |
 | `Subscription Plan` | Linked to `Subscription_Plan` selected in form |
 
+**What this replaces:** Admin manually creating a transaction record after registering a new client — a step that was often missed, leaving sales unrecorded.
+
 ---
 
 ### Form: New Client Registration & Sale Classes/Events
 
-This is an **internal administrator form** — used at the front desk when a new client walks in for the first time or registers at an event.
+This is an **internal administrator form** used at the front desk when a new client walks in for the first time or registers at an event.
 
-**Form flow:**
+**Form fields:**
 
-```
-1. Admin opens Check-in & Sales Hub
-2. Navigates to New Client Registration & Sale page
-3. Fills in client details:
-   → First name, Last name, Email, Phone
-   → Acquisition Source (how they heard about the studio)
-   → Subscription Plan (which plan they are purchasing)
-   → If event attendee: selects Event Special Ticket
-
-4. Submits the form
-   → Client record created in Clients table
-   → Transaction record created automatically
-   → Client is now active in the system
-```
+| Field | Description |
+|---|---|
+| First name, Last name | Client identity |
+| Email, Phone | Contact details |
+| Acquisition Source | How the client heard about the studio |
+| Subscription Plan | Which plan they are purchasing — drives the linked transaction |
+| Event Special Ticket | Selected instead of a plan if the client is an event attendee |
 
 ---
 
-### Post-Registration Workflow
-
-After the initial registration and transaction sync, the admin continues in the same interface:
-
-```
-New Client registered + Transaction created
-                ↓
-If client attended an event:
-   → Admin goes to Existing Client Event Registration
-   → Finds the event card
-   → Links the new client to the event attendance list
-
-If client is attending a regular class:
-   → Admin goes to Class/Event Check-in
-   → Registers client attendance for the session
-```
-
----
-
-## Key Fields
+### Key Fields
 
 | Field | Table | Type | Description |
 |---|---|---|---|
-| `Client_User_name` | `Clients` | Text | Unique client identifier — used to link transaction |
+| `Client_User_name` | `Clients` | Text | Unique client identifier — used to link the transaction |
 | `Subscription Plan` | `Transactions` | Linked record | References `Subscription_Plans` table |
 | `Amount_Paid` | `Transactions` | Currency | Payment amount — populated from plan price |
-| `Total_Classes` | `Transactions` | Number | Classes included in purchased plan |
+| `Total_Classes` | `Transactions` | Number | Classes included in the purchased plan |
 | `Remaining_Classes` | `Transactions` | Formula | `Total_Classes - Visits_Used` |
 | `Visits_Used` | `Transactions` | Rollup | COUNT of linked attendance records |
 | `Date_transaction` | `Transactions` | Date | Date of purchase |
@@ -144,19 +210,6 @@ If client is attending a regular class:
 
 ---
 
-## Interface
 
-**🖥️ Check-in & Sales Hub → New Client Registration & Sale**
-Internal administrator form. Submitting this form triggers the automation. Used at the front desk for first-time client registration and plan purchase — including event special tickets.
-
-**🖥️ Check-in & Sales Hub → Existing Client Event Registration**
-Follow-up step after registration — links the new client to a specific event attendance list.
-
-**🖥️ Check-in & Sales Hub → Class/Event Check-in**
-Used to register client attendance for regular sessions after registration is complete.
-
-> 📌 For returning clients purchasing a new plan, the **Existing Client Sale** page is used instead — which does not trigger this automation as the client already exists in the system.
-
----
 
 *[← Back to main README](./README.md)*
