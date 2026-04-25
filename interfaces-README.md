@@ -2,158 +2,46 @@
 
 > **6 role-specific Airtable interfaces** designed to surface the right data to the right people — each built around a specific operational domain and stakeholder group.
 
+**Contents:** [🖥️ Interface Overview](#interface) · [⚡ Automation → Interface Map](#automation-overview) · [👤 User Workflows by Role](#user-workflows) · [🎬 Demo](#demo) · [🔬 Detailed Page Reference](#technical-deep-dive)
+
 ---
 
-## Overview
+## What This Module Does
 
-| Interface | Purpose | Stakeholders | Automations Managed |
+From a business perspective, the interface layer solves one fundamental problem:
+
+**People don't work directly in database tables.** Each team member — HR, Sales, Marketing, Admin — needs to see and act on a different slice of the studio's data. The 6 interfaces replace direct table access with purpose-built workspaces: every stakeholder opens their hub, sees only what's relevant to their role, and takes actions that feed the automation layer automatically.
+
+This separation means a front-desk admin registering a client never has to touch the HR pipeline. A sales rep managing leads never sees the session calendar. A marketing manager publishing events never manually coordinates with operations. Each interface is scoped, focused, and directly connected to the automations that keep everything in sync.
+
+---
+
+<a id="demo"></a>
+## 🎬 Demo
+
+> 📹 *Walkthrough video — coming soon.*
+> Screenshots and navigation demos for each interface hub will be added here.
+
+---
+
+<a id="interface"></a>
+## 🖥️ Interface Overview
+
+| Interface | Purpose | Stakeholders | Automations managed |
 |---|---|---|---|
-| [Studio HR Hub](#studio-hr-hub) | 360° team management — hiring to contract renewals | HR, Admin | 6 |
-| [Studio Operations Hub](#studio-operations-hub) | Monthly scheduling, class oversight, teacher management | HR, Admin | 1 |
-| [Check-in & Sales Hub](#check-in--sales-hub) | Front-desk operations — registration, sales, check-ins | Marketing, Admin | 1 |
-| [Marketing Ops Hub](#marketing-ops-hub) | Campaign management, partnerships, event coordination | Marketing | 1 |
-| [Sales Ops Hub](#sales-ops-hub) | Lead qualification funnel, client portfolio, retention | Sales | 5 |
-| [Web Operations Hub](#web-operations-hub) | Website content — events, gallery, AI-translated media | Marketing | — |
+| **Studio HR Hub** | 360° team management — from hiring to contract renewals | HR, Admin | 6 |
+| **Studio Operations Hub** | Monthly scheduling, class oversight, and teacher management | HR, Admin | 1 |
+| **Check-in & Sales Hub** | Front-desk operations — client registration, plan sales, check-ins | Marketing, Admin | 1 |
+| **Marketing Ops Hub** | Campaign management, partnership tracking, event coordination | Marketing | 1 |
+| **Sales Ops Hub** | Lead qualification funnel, client portfolio health, retention metrics | Sales | 5 |
+| **Web Operations Hub** | Website content management — events, gallery, AI-translated media sync | Marketing | — |
 
 ---
 
-## Studio HR Hub
+<a id="automation-overview"></a>
+## ⚡ Automation → Interface Map
 
-> A 360° operational view of the entire team — from initial hiring and onboarding through to contract renewals and offboarding.
-
-**Stakeholders:** HR Manager, Studio Admin
-
-**Automations managed here:** 6
-- [HR] Auto-start Renewal
-- Done: Auto-mark Renewal as Done
-- Non-Renewal: Auto-Close
-- [HR] Renewal: Finalize & Reset
-- Teacher Approval to Class Workflow
-- Update Teacher Sync Class
-
-### Pages
-
-| Page | Description |
-|---|---|
-| 🚀 HR Control Center | High-level overview of all HR processes — active staff, pending renewals, onboarding pipeline, and absence summary. Entry point for all HR operations. |
-| 📂 Staff Directory | Full staff record cards — contact details, contract type, specializations, approval status. Editing specializations here triggers Teacher → Class sync automations. |
-| ✍️ Staff Absence Form | Internal form for logging sick leave, holidays, and planned absences. |
-| 📋 Staff Absence Reporting | Overview of all logged absences — past, current, and upcoming. Used to plan substitutions and track patterns. |
-| ⏳ New Staff Onboarding | Pipeline for managing new hires from offer acceptance through to system setup and first session. |
-| 🔄 Contract Renewal Management | CDD contract renewal pipeline. Kanban board across four stages: Not Started → In Discussion → Contract Sent → Done. All 4 renewal automations are triggered by actions taken on this board. |
-
----
-
-## Studio Operations Hub
-
-> A multi-page interface designed to centralize monthly scheduling, class oversight, and teacher management — providing real-time visibility into availability, absences, and session coordination.
-
-**Stakeholders:** HR Manager, Studio Admin
-
-**Automations managed here:** 1
-- Recurring Sessions Generator
-
-### Pages
-
-| Page | Description |
-|---|---|
-| Overview | Summary of daily and weekly operations — session count, room utilization, teacher availability, and upcoming absences. |
-| Schedule & Operations | Master session list with filtering by date, teacher, room, and status. Used for operational oversight and issue resolution. |
-| Monthly Studio Planner | Interactive calendar view for creating and managing sessions. This is where sessions are created, the `Recurring` toggle is set, and `Session_Status` is updated to Completed — triggering the Recurring Sessions Generator automation. |
-| Teacher Profiles | Detailed teacher cards — contact info, specializations, active classes, and session history. Updating specializations here triggers the Teacher Sync automation. |
-| Leave Registration | Form for logging teacher leave requests — sick days, holidays, and planned absences. |
-| Absence Tracker | Real-time view of who is currently absent, on leave, or has upcoming planned time off. Used to identify sessions that need a substitute teacher. |
-
----
-
-## Check-in & Sales Hub
-
-> A streamlined front-desk interface dedicated to client registration, subscription sales, and session attendance management.
-
-**Stakeholders:** Marketing Manager, Studio Admin
-
-**Automations managed here:** 1
-- SYNC TRANSACTIONS TO NEW CLIENT
-
-### Pages
-
-| Page | Description |
-|---|---|
-| Overview | Daily front-desk summary — expected check-ins, recent sales, and new registrations. |
-| Existing Client Sale | Form for processing subscription renewals and plan upgrades for clients already in the system. Does not trigger the transaction automation — client record already exists. |
-| New Client Registration & Sale | Form for registering first-time clients and processing their initial plan purchase or event ticket. **Submitting this form triggers the SYNC TRANSACTIONS automation.** |
-| Existing Client Event Registration | Board of scheduled events with attendee management. Used after registration to link a client to a specific event. |
-| Class / Event Check-in | Attendance registration form for regular sessions and events. Used to log who actually attended vs. scheduled. |
-
----
-
-## Marketing Ops Hub
-
-> A multi-page workspace designed to centralize campaign management, partnership tracking, and event coordination — aligning promotional activities with studio scheduling.
-
-**Stakeholders:** Marketing Manager
-
-**Automations managed here:** 1
-- Sync Event to Studio Calendar
-
-### Pages
-
-| Page | Description |
-|---|---|
-| Overview | Marketing performance summary — active campaigns, upcoming events, recent leads, and partner activity. |
-| Monthly Studio Planner | Shared calendar view — allows marketing to align campaign timing with the class schedule. Read-only overview of sessions. |
-| Marketing Campaigns Intake | Form for registering new campaigns. Filling in `Event_Date` and selecting `Event/Workshop` type here prepares the record for the calendar sync automation. |
-| Event Lifecycle Manager | Kanban pipeline across all campaign statuses: Concept → Planning → In Progress → Completed. **Moving a campaign to In Progress triggers the Sync Event to Studio Calendar automation.** |
-| Add New Partner | Form for registering a new partner — company details, contact person, and partnership type. |
-| Partner Directory | Full directory of studio partners with contact details, active campaigns, and collaboration history. |
-
----
-
-## Sales Ops Hub
-
-> A multi-page interface designed to manage the entire client lifecycle — from lead qualification through to portfolio health and retention monitoring.
-
-**Stakeholders:** Sales Manager
-
-**Automations managed here:** 5
-- LEAD MIGRATION: Clients
-- LEAD MIGRATION: Partners
-- LEAD MIGRATION: Stuff
-- LEAD MIGRATION: Teachers
-- Lead Management: Archive Notes to Activity Log
-
-### Pages
-
-| Page | Description |
-|---|---|
-| Overview | Sales performance summary — lead counts by status, recent conversions, and key retention metrics. Quick links to essential Airtable resources and documentation. |
-| Lead Management Board | Kanban board across all qualification statuses: MQL → Not Reached → SQL → Positive → Rejected. Lead cards surface contact details, lead type, original message, notes, and next step date. All 5 CRM automations are triggered by actions taken here. |
-| Client Portfolio & Health Insights | Client segmentation dashboard — identifies 💎 VIP, ⭐ Regular, ⚠️ At-Risk, and 💀 Churned clients. Tracks subscription health, visit frequency, and LTV across the full client base. |
-
----
-
-## Web Operations Hub
-
-> A multi-page control center for managing all website content — from publishing studio events to curating the automated Instagram gallery feed.
-
-**Stakeholders:** Marketing Manager
-
-**Automations managed here:** None (managed via Make scenarios — see [yoga-ops-analytics-pipeline-portfolio](../))
-
-### Pages
-
-| Page | Description |
-|---|---|
-| Overview | Website content status — published events, gallery items, and pending AI translations requiring review. |
-| Website Events Manager | Form and board for creating and publishing events to the website. Controls `Display_on_Website` toggle and manages AI-generated multilingual titles (RU / EN / FR). |
-| Events Board | Full overview of all event records — both published and unpublished. Used to manage visibility and review content across all statuses. |
-| Instagram Gallery Manager | Gallery management board for Instagram content synced automatically via Make. Allows review of AI-generated titles, category assignment, and toggling visibility for the live website gallery. |
-
----
-
-## Automation → Interface Map
-
-Full cross-reference of which automation is triggered from which interface page:
+Full cross-reference of which automation is triggered from which interface and page:
 
 | Automation | Interface | Page |
 |---|---|---|
@@ -173,5 +61,206 @@ Full cross-reference of which automation is triggered from which interface page:
 | SYNC TRANSACTIONS TO NEW CLIENT | Check-in & Sales Hub | New Client Registration & Sale |
 
 ---
+
+<a id="user-workflows"></a>
+## 👤 User Workflows by Role
+
+### HR Manager & Admin
+
+```
+Daily entry point: Studio HR Hub → HR Control Center
+   → Reviews active staff, pending contract renewals, onboarding status
+
+Contract renewals:
+   → Studio HR Hub → Contract Renewal Management
+   → Opens employee cards with 🟡 Renewal Required status
+   → Writes notes → automation fires → pipeline progresses automatically
+
+Teacher onboarding:
+   → Studio HR Hub → Staff Directory
+   → Creates teacher record, fills Specialization
+   → Automation links teacher to Classes automatically
+
+Session scheduling:
+   → Studio Operations Hub → Monthly Studio Planner
+   → Creates sessions, sets Recurring toggle
+   → Marks sessions Completed → next week's session appears automatically
+```
+
+### Sales Manager
+
+```
+Daily entry point: Sales Ops Hub → Overview
+   → Reviews lead counts by status, recent conversions, retention metrics
+
+Lead qualification:
+   → Sales Ops Hub → Lead Management Board (Kanban)
+   → Reviews incoming leads, adds notes + next step dates
+   → Automation archives every interaction to activity log
+   → Sets Qualify_Status = Positive → lead migrates to correct table automatically
+
+Client portfolio:
+   → Sales Ops Hub → Client Portfolio & Health Insights
+   → Monitors VIP, At-Risk, and Churned client segments
+```
+
+### Marketing Manager
+
+```
+Campaign management:
+   → Marketing Ops Hub → Marketing Campaigns Intake
+   → Registers new campaigns and events with dates and type
+   → Marketing Ops Hub → Event Lifecycle Manager
+   → Moves campaign to In Progress → session appears in studio calendar automatically
+
+Website content:
+   → Web Operations Hub → Website Events Manager
+   → Publishes events to website, manages AI-translated titles
+   → Web Operations Hub → Instagram Gallery Manager
+   → Reviews and publishes synced Instagram content
+
+Partner tracking:
+   → Marketing Ops Hub → Partner Directory
+   → Manages partner contacts, active campaigns, collaboration history
+```
+
+### Front Desk Admin
+
+```
+New client registration:
+   → Check-in & Sales Hub → New Client Registration & Sale
+   → Fills form with client details + subscription plan
+   → Submits → client record + transaction created automatically
+
+Returning client sale:
+   → Check-in & Sales Hub → Existing Client Sale
+   → Processes plan renewal or upgrade for existing client
+
+Event attendance:
+   → Check-in & Sales Hub → Existing Client Event Registration
+   → Links registered clients to event attendance list
+
+Daily check-ins:
+   → Check-in & Sales Hub → Class / Event Check-in
+   → Logs who attended each session or event
+```
+
+---
+
+<a id="technical-deep-dive"></a>
+## 🔬 Detailed Page Reference
+
+### Studio HR Hub
+
+> A 360° operational view of the entire team — from initial hiring and onboarding through to contract renewals and offboarding.
+
+**Stakeholders:** HR Manager, Studio Admin
+**Automations managed:** 6 — all Contract Renewal and Teacher Assignment automations
+
+| Page | Description |
+|---|---|
+| 🚀 HR Control Center | High-level overview of all HR processes — active staff, pending renewals, onboarding pipeline, and absence summary. Entry point for daily HR operations. |
+| 📂 Staff Directory | Full staff record cards — contact details, contract type, specializations, approval status. Editing specializations here triggers Teacher → Class sync automations. |
+| ✍️ Staff Absence Form | Internal form for logging sick leave, holidays, and planned absences. |
+| 📋 Staff Absence Reporting | Overview of all logged absences — past, current, and upcoming. Used to plan substitutions and track patterns. |
+| ⏳ New Staff Onboarding | Pipeline for managing new hires from offer acceptance through to system setup and first session. |
+| 🔄 Contract Renewal Management | CDD contract renewal pipeline. Kanban board across four stages: Not Started → In Discussion → Contract Sent → Done. All 4 renewal automations are triggered by actions taken on this board. |
+
+→ [Tech deep dive, user workflow & demo](./hr-staff-management-README.md)
+
+---
+
+### Studio Operations Hub
+
+> A multi-page interface designed to centralize monthly scheduling, class oversight, and teacher management — providing real-time visibility into availability, absences, and session coordination.
+
+**Stakeholders:** HR Manager, Studio Admin
+**Automations managed:** 1 — Recurring Sessions Generator
+
+| Page | Description |
+|---|---|
+| 🏠 Overview | Summary of daily and weekly operations — session count, room utilization, teacher availability, and upcoming absences. |
+| 📊 Schedule & Operations | Master session list with filtering by date, teacher, room, and status. Used for operational oversight and issue resolution. |
+| 📅 Monthly Studio Planner | Interactive calendar view for creating and managing sessions. Sessions are created here, the `Recurring` toggle is set, and `Session_Status` is updated to Completed — triggering the Recurring Sessions Generator automation. |
+| 👤 Teacher Profiles | Detailed teacher cards — contact info, specializations, active classes, and session history. Updating specializations here triggers the Teacher Sync automation. |
+| 🌴 Leave Registration | Form for logging teacher leave requests — sick days, holidays, and planned absences. |
+| 📋 Absence Tracker | Real-time view of who is currently absent, on leave, or has upcoming planned time off. Used to identify sessions that need a substitute teacher. |
+
+→ [Tech deep dive, user workflow & demo](./operations-scheduling-README.md)
+
+---
+
+### Check-in & Sales Hub
+
+> A streamlined front-desk interface dedicated to client registration, subscription sales, and session attendance management.
+
+**Stakeholders:** Marketing Manager, Studio Admin
+**Automations managed:** 1 — SYNC TRANSACTIONS TO NEW CLIENT
+
+| Page | Description |
+|---|---|
+| 🏠 Overview | Daily front-desk summary — expected check-ins, recent sales, and new registrations. |
+| 💳 Existing Client Sale | Form for processing subscription renewals and plan upgrades for clients already in the system. Does not trigger the transaction automation — client record already exists. |
+| 🆕 New Client Registration & Sale | Form for registering first-time clients and processing their initial plan purchase or event ticket. **Submitting this form triggers the SYNC TRANSACTIONS automation.** |
+| 📅 Existing Client Event Registration | Board of scheduled events with attendee management. Used after registration to link a client to a specific event. |
+| ✅ Class / Event Check-in | Attendance registration form for regular sessions and events. Used to log who actually attended vs. scheduled. |
+
+→ [Tech deep dive, user workflow & demo](./finance-transactions-README.md)
+
+---
+
+### Marketing Ops Hub
+
+> A multi-page workspace designed to centralize campaign management, partnership tracking, and event coordination — aligning promotional activities with studio scheduling.
+
+**Stakeholders:** Marketing Manager
+**Automations managed:** 1 — Sync Event to Studio Calendar
+
+| Page | Description |
+|---|---|
+| 🏠 Overview | Marketing performance summary — active campaigns, upcoming events, recent leads, and partner activity. |
+| 📅 Monthly Studio Planner | Shared calendar view — allows marketing to align campaign timing with the class schedule. Read-only overview of sessions. |
+| 📝 Marketing Campaigns Intake | Form for registering new campaigns. Filling in `Event_Date` and selecting `Event/Workshop` type here prepares the record for the calendar sync automation. |
+| 🗓️ Event Lifecycle Manager | Kanban pipeline across all campaign statuses: Concept → Planning → In Progress → Completed. **Moving a campaign to In Progress triggers the Sync Event to Studio Calendar automation.** |
+| 🤝 Add New Partner | Form for registering a new partner — company details, contact person, and partnership type. |
+| 📋 Partner Directory | Full directory of studio partners with contact details, active campaigns, and collaboration history. |
+
+→ [Tech deep dive, user workflow & demo](./operations-scheduling-README.md)
+
+---
+
+### Sales Ops Hub
+
+> A multi-page interface designed to manage the entire client lifecycle — from lead qualification through to portfolio health and retention monitoring.
+
+**Stakeholders:** Sales Manager
+**Automations managed:** 5 — all Lead Migration and Activity Log automations
+
+| Page | Description |
+|---|---|
+| 🏠 Overview | Sales performance summary — lead counts by status, recent conversions, and key retention metrics. Quick links to essential Airtable resources and documentation. |
+| 📋 Lead Management Board | Kanban board across all qualification statuses: MQL → Not Reached → SQL → Positive → Rejected. Lead cards surface contact details, lead type, original message, notes, and next step date. All 5 CRM automations are triggered by actions taken here. |
+| 💎 Client Portfolio & Health Insights | Client segmentation dashboard — identifies VIP, Regular, At-Risk, and Churned clients. Tracks subscription health, visit frequency, and LTV (Lifetime Value) across the full client base. |
+
+→ [Tech deep dive, user workflow & demo](./crm-lead-management-README.md)
+
+---
+
+### Web Operations Hub
+
+> A multi-page control center for managing all website content — from publishing studio events to curating the automated Instagram gallery feed.
+
+**Stakeholders:** Marketing Manager
+**Automations managed:** None (managed via Make scenarios — external sync pipeline)
+
+| Page | Description |
+|---|---|
+| 🏠 Overview | Website content status — published events, gallery items, and pending AI translations requiring review. |
+| 🌐 Website Events Manager | Form and board for creating and publishing events to the website. Controls `Display_on_Website` toggle and manages AI-generated multilingual titles (RU / EN / FR). |
+| 📋 Events Board | Full overview of all event records — both published and unpublished. Used to manage visibility and review content across all statuses. |
+| 🖼️ Instagram Gallery Manager | Gallery management board for Instagram content synced automatically via Make. Allows review of AI-generated titles, category assignment, and toggling visibility for the live website gallery. |
+
+---
+
 
 *[← Back to main README](./README.md)*
