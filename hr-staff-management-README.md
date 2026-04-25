@@ -1,10 +1,140 @@
-# 📁 HR & Staff Management
+# 📁 HR (Human Resources) & Staff Management
 
 > **6 native Airtable automations** covering the full employee lifecycle — from contract renewal tracking to teacher-class assignment synchronization.
 
+**Contents:** [🖥️ Interface](#interface) · [⚡ Automation Overview](#automation-overview) · [👤 User Workflows](#user-workflows) · [🎬 Demo](#demo) · [🔬 Technical Deep Dive](#technical-deep-dive)
+
 ---
 
-## Tables Involved
+## What This Module Does
+
+From a business perspective, this module solves two recurring operational problems:
+
+**Contract renewals don't get lost.** Every CDD (fixed-term) employee whose contract is approaching expiry automatically enters a tracked renewal pipeline — moving through stages from first discussion to final reset, with no manual status changes required from HR. The system handles the progression; HR handles the conversation.
+
+**Teacher rosters stay accurate without manual linking.** When a new teacher is onboarded and approved, or an existing teacher updates their specializations, the relevant yoga classes in the system are updated automatically. HR never needs to manually connect a teacher to a class type.
+
+---
+
+## 🎬 Demo
+
+> 📹 *Walkthrough video — coming soon.*
+> Screenshots and step-by-step demo for Contract Renewal Pipeline and Teacher Assignment flow will be added here.
+
+---
+
+## 🖥️ Interface
+
+All 6 HR automations are managed through two interfaces. Here is what each entry point controls and what happens behind the scenes.
+
+### Studio HR Hub
+
+The primary HR workspace. HR managers and admins use this interface for all people operations — from hiring pipeline to offboarding.
+
+| Page | What the user does here | Automations triggered |
+|---|---|---|
+| **🔄 Contract Renewal Management** | Reviews employees with `🟡 Renewal Required` status. Opens employee cards, writes renewal notes, updates contract dates, or marks termination. | Auto-start Renewal (1), Auto-mark Done (2), Non-Renewal Auto-Close (3), Finalize & Reset (4) |
+| **📂 Staff Directory** | Views full staff records. Edits teacher specializations and contact details. Approves or rejects new hires via `NEW:Approval Status`. | Teacher Approval to Class Workflow (5), Update Teacher Sync Class (6) |
+| **🚀 HR Control Center** | High-level overview of all HR processes — active staff, pending renewals, onboarding pipeline, absence summary. Entry point for daily HR operations. | — (read-only overview) |
+| **⏳ New Staff Onboarding** | Manages new hires from offer acceptance through to system setup and first session. | — |
+| **✍️ Staff Absence Form** | Logs sick leave, holidays, and planned absences. | — |
+| **📋 Staff Absence Reporting** | Overview of all logged absences — past, current, and upcoming. Used to plan substitutions. | — |
+
+### Studio Operations Hub
+
+Used by HR and admins for scheduling operations. Provides an alternative entry point for teacher data management.
+
+| Page | What the user does here | Automations triggered |
+|---|---|---|
+| **👤 Teacher Profiles** | Views teacher cards — contact info, specializations, active classes, session history. Updating specializations here re-syncs the teacher across all linked class types. | Update Teacher Sync Class (6) |
+| **📅 Monthly Studio Planner** | Creates and manages sessions, sets recurring toggles, marks sessions as completed. | — (Recurring Sessions is in Operations module) |
+
+---
+
+## ⚡ Automation Overview
+
+6 automations covering two independent pipelines:
+
+**Contract Renewal Pipeline (automations 1–4)** — a sequential state machine. Each automation picks up where the previous one left off, moving a CDD employee record through the full renewal cycle without HR manually changing statuses. HR's only job is to write notes, update dates, and make the actual contract decision. The system handles the rest.
+
+**Teacher → Class Assignment (automations 5–6)** — a sync mechanism. Keeps the `Classes` table always up to date with the correct list of qualified teachers. Fires once on new teacher approval, and again whenever a teacher's specializations change later.
+
+| # | Automation | Trigger | Source Table | Destination Table | Interface |
+|---|---|---|---|---|---|
+| 1 | [HR] Auto-start Renewal | `Update on Contract(Renew)` field updated | `Stuff & Teachers` | `Stuff & Teachers` | Studio HR Hub → Contract Renewal Management |
+| 2 | Done: Auto-mark Renewal as Done | `CDD_End_Date` updated + conditions met | `Stuff & Teachers` | `Stuff & Teachers` | Studio HR Hub → Contract Renewal Management |
+| 3 | Non-Renewal: Auto-Close | Record matches Termination conditions | `Stuff & Teachers` | `Stuff & Teachers` | Studio HR Hub → Contract Renewal Management |
+| 4 | [HR] Renewal: Finalize & Reset | `CDD_Renewal Progress = Done` | `Stuff & Teachers` | `Stuff & Teachers` | Studio HR Hub → Contract Renewal Management |
+| 5 | Teacher Approval to Class Workflow | New teacher approved + Specialization filled | `Stuff & Teachers` | `Classes` | Studio HR Hub → Staff Directory |
+| 6 | Update Teacher Sync Class | `Specialization` field updated | `Stuff & Teachers` | `Classes` | Studio HR Hub → Staff Directory / Studio Operations Hub → Teacher Profiles |
+
+---
+
+## 👤 User Workflows
+
+### Contract Renewal Pipeline
+
+```
+1. HR opens Contract Renewal Management board (Studio HR Hub)
+   → Employees with 🟡 Renewal Required appear automatically
+   → Status is formula-driven — no manual flagging needed
+
+2. HR opens the employee card and writes renewal notes
+   in "Update on Contract(Renew)" field
+   → [1] Auto-start fires → CDD_Renewal Progress moves to In Discussion
+   → Timestamp logged automatically
+
+3. HR manages the negotiation, prepares documentation
+
+4a. If renewing:
+    → HR updates CDD_End_Date with the new future contract date
+    → [2] Auto-mark fires → Progress moves to Done
+    → [4] Finalize & Reset fires → notes cleared, cycle resets to Not Started
+
+4b. If not renewing:
+    → HR sets CDD_Renewal Progress to Termination
+    → After final working day, Contract_status formula = 🔴 Inactive
+    → [3] Non-Renewal Auto-Close fires → Done + reason logged + record archived
+    → [4] Finalize & Reset fires → cycle closes
+
+4c. If transitioning from CDD to CDI:
+    → HR changes Contract Type to CDI
+    → Employee exits the CDD pipeline automatically — no further action needed
+```
+
+### Teacher → Class Assignment
+
+```
+1. HR creates a new teacher record in Staff Directory (Studio HR Hub)
+2. HR fills in Specialization (e.g. Hatha, Vinyasa)
+3. HR leaves NEW:Approval Status empty (not rejected)
+   → [5] Teacher Approval to Class Workflow fires automatically
+   → Teacher is linked to matching Classes in Qualified Teachers field
+
+4. Later, if teacher adds or changes a specialization:
+   → HR updates Specialization in Staff Directory or Teacher Profiles
+   → [6] Update Teacher Sync Class fires
+   → All linked Classes are re-synced with the updated teacher record
+```
+
+---
+
+## 🔬 Technical Deep Dive
+
+### Context: CDD vs CDI
+
+The studio employs staff under two contract types:
+
+| Type | Full Name | Description |
+|---|---|---|
+| **CDD** | Contrat à Durée Déterminée | Fixed-term contract with a defined end date — requires active renewal tracking |
+| **CDI** | Contrat à Durée Indéterminée | Permanent contract with no end date — no renewal cycle needed |
+
+All 4 Contract Renewal automations apply exclusively to **CDD** employees.
+
+---
+
+### Tables Involved
 
 ```mermaid
 erDiagram
@@ -42,33 +172,7 @@ erDiagram
 
 ---
 
-## Contents
-
-- [Context: CDD vs CDI](#context-cdd-vs-cdi)
-- [Contract Renewal Pipeline](#contract-renewal-pipeline)
-- [Teacher → Class Assignment](#teacher--class-assignment)
-- [Interface](#interface)
-
----
-
-## Context: CDD vs CDI
-
-The studio employs staff under two contract types:
-
-| Type | Full Name | Description |
-|---|---|---|
-| **CDD** | Contrat à Durée Déterminée | Fixed-term contract with a defined end date — requires active renewal tracking |
-| **CDI** | Contrat à Durée Indéterminée | Permanent contract with no end date — no renewal cycle needed |
-
-All 4 Contract Renewal automations apply exclusively to **CDD** employees.
-
----
-
-## Contract Renewal Pipeline
-
-### Overview
-
-Four automations work as a **single sequential pipeline** — each one picks up where the previous left off. The goal is to track every CDD contract through its full renewal lifecycle without manual status updates.
+### Contract Renewal Pipeline — Flow
 
 ```
 HR adds note to "Update on Contract(Renew)"
@@ -152,93 +256,7 @@ HR adds note to "Update on Contract(Renew)"
 
 ---
 
-### Key Fields
-
-| Field | Type | Logic |
-|---|---|---|
-| `Contract_status` | Formula | `🟢 Active` / `🟡 Renewal Required` (≤30 days to expiry) / `🔴 Expired` / `🔴 Inactive` / `🟠 Termination Pending` |
-| `CDD_Renewal Progress` | Single select | `Not Started` → `In Discussion` → `Contract Sent` → `Done` / `Termination` |
-| `CDD_End_Date` | Date | Contract expiry date — key trigger for status formula |
-| `CDD_Days_until_expiration` | Formula | Days remaining or `🔴 Expired X days ago` |
-| `Update on Contract(Renew)` | Text | HR notes field — writing here triggers Auto-start |
-| `Helper_Log_Text` | Formula | System-generated renewal confirmation log |
-| `Contract Type` | Single select | `CDD` / `CDI` / `Freelance` |
-| `NEW:Approval Status` | Field | Used in Contract_status formula to handle rejected candidates |
-
-#### Formula: `Contract_status`
-
-```
-IF(
-  {NEW:Approval Status} = "❌ Rejected",
-  "🔴 Inactive (Rejected)",
-  IF({Contract Type} = "CDD",
-    IF({CDD_Renewal Progress} = "⛔️ Termination",
-      IF(IS_AFTER(TODAY(), {CDD_End_Date}), "🔴 Inactive (Terminated)", "🟠 Termination Pending"),
-      IF(IS_AFTER(TODAY(), {CDD_End_Date}), "🔴 Expired",
-        IF(DATETIME_DIFF({CDD_End_Date}, TODAY(), 'days') <= 30, "🟡 Renewal Required", "🟢 Active")
-      )
-    ),
-    IF({Contract Type} = "CDI",
-      IF(AND({CDI_Termination_Date}, IS_BEFORE({CDI_Termination_Date}, TODAY())),
-        "🔴 Inactive", "🟢 Active"
-      ),
-      IF({Contract Type} = "Freelance", "🟢 Active", "⚪ No Status")
-    )
-  )
-)
-```
-
-#### Formula: `CDD_Days_until_expiration`
-
-```
-IF(
-  {CDD_End_Date},
-  IF(
-    DATETIME_DIFF({CDD_End_Date}, TODAY(), 'days') < 0,
-    "🔴 Expired " & ABS(DATETIME_DIFF({CDD_End_Date}, TODAY(), 'days')) & " days ago",
-    DATETIME_DIFF({CDD_End_Date}, TODAY(), 'days')
-  ),
-  "no data"
-)
-```
-
----
-
-### User Workflow
-
-```
-1. HR reviews Contract Renewal Management board
-   → Employees with 🟡 Renewal Required appear automatically
-
-2. HR opens the employee card and writes renewal notes
-   in "Update on Contract(Renew)" field
-   → [1] Auto-start fires → status moves to In Discussion
-
-3. HR manages the negotiation, prepares documentation
-
-4a. If renewing:
-    → HR updates CDD_End_Date with the new future date
-    → [2] Auto-mark fires → status moves to Done
-    → [4] Finalize & Reset fires → cycle resets to Not Started
-
-4b. If not renewing:
-    → HR sets CDD_Renewal Progress to Termination
-    → After final working day, Contract_status = Inactive
-    → [3] Non-Renewal Auto-Close fires → Done + Archived
-    → [4] Finalize & Reset fires → cycle closes
-
-4c. If transitioning to CDI:
-    → HR changes Contract Type to CDI
-    → Employee exits the CDD pipeline automatically
-```
-
----
-
-## Teacher → Class Assignment
-
-### Overview
-
-Two automations keep the `Classes` table in sync with the `Stuff & Teachers` table — ensuring that every class always has an up-to-date list of qualified teachers without manual linking.
+### Teacher → Class Assignment — Flow
 
 ```
 New teacher record created + Specialization filled + Approved
@@ -283,6 +301,21 @@ New teacher record created + Specialization filled + Approved
 
 ### Key Fields
 
+#### Contract Renewal
+
+| Field | Type | Logic |
+|---|---|---|
+| `Contract_status` | Formula | `🟢 Active` / `🟡 Renewal Required` (≤30 days to expiry) / `🔴 Expired` / `🔴 Inactive` / `🟠 Termination Pending` |
+| `CDD_Renewal Progress` | Single select | `Not Started` → `In Discussion` → `Contract Sent` → `Done` / `Termination` |
+| `CDD_End_Date` | Date | Contract expiry date — key trigger for status formula |
+| `CDD_Days_until_expiration` | Formula | Days remaining or `🔴 Expired X days ago` |
+| `Update on Contract(Renew)` | Text | HR notes field — writing here triggers Auto-start |
+| `Helper_Log_Text` | Formula | System-generated renewal confirmation log |
+| `Contract Type` | Single select | `CDD` / `CDI` / `Freelance` |
+| `NEW:Approval Status` | Field | Used in `Contract_status` formula to handle rejected candidates |
+
+#### Teacher Assignment
+
 | Field | Table | Description |
 |---|---|---|
 | `Contact Type` | `Stuff & Teachers` | Must be `Yoga_Teacher` to trigger assignment |
@@ -293,34 +326,44 @@ New teacher record created + Specialization filled + Approved
 
 ---
 
-### User Workflow
+### Formulas
+
+#### `Contract_status`
 
 ```
-1. HR creates a new teacher record in Staff Directory
-2. HR fills in Specialization (e.g. Hatha, Vinyasa)
-3. HR leaves NEW:Approval Status empty (not rejected)
-   → [5] fires automatically → teacher linked to Classes
-
-4. Later, if teacher adds a new specialization:
-   → HR updates Specialization field in Teacher Profiles
-   → [6] fires → all linked Classes updated automatically
+IF(
+  {NEW:Approval Status} = "❌ Rejected",
+  "🔴 Inactive (Rejected)",
+  IF({Contract Type} = "CDD",
+    IF({CDD_Renewal Progress} = "⛔️ Termination",
+      IF(IS_AFTER(TODAY(), {CDD_End_Date}), "🔴 Inactive (Terminated)", "🟠 Termination Pending"),
+      IF(IS_AFTER(TODAY(), {CDD_End_Date}), "🔴 Expired",
+        IF(DATETIME_DIFF({CDD_End_Date}, TODAY(), 'days') <= 30, "🟡 Renewal Required", "🟢 Active")
+      )
+    ),
+    IF({Contract Type} = "CDI",
+      IF(AND({CDI_Termination_Date}, IS_BEFORE({CDI_Termination_Date}, TODAY())),
+        "🔴 Inactive", "🟢 Active"
+      ),
+      IF({Contract Type} = "Freelance", "🟢 Active", "⚪ No Status")
+    )
+  )
+)
 ```
 
----
+#### `CDD_Days_until_expiration`
 
-## Interface
+```
+IF(
+  {CDD_End_Date},
+  IF(
+    DATETIME_DIFF({CDD_End_Date}, TODAY(), 'days') < 0,
+    "🔴 Expired " & ABS(DATETIME_DIFF({CDD_End_Date}, TODAY(), 'days')) & " days ago",
+    DATETIME_DIFF({CDD_End_Date}, TODAY(), 'days')
+  ),
+  "no data"
+)
+```
 
-All 6 HR automations are managed from a single interface:
-
-**🖥️ Studio HR Hub → Contract Renewal Management**
-All 4 contract renewal automations are triggered by actions taken on this board.
-
-**🖥️ Studio HR Hub → Staff Directory**
-Teacher approval and specialization updates trigger automations 5 and 6.
-
-**🖥️ Studio Operations Hub → Teacher Profiles**
-Alternative entry point for updating teacher specializations and contact details.
-
----
 
 *[← Back to main README](./README.md)*
